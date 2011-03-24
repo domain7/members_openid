@@ -46,5 +46,11 @@
 			if (!$credentials) return;
 
 			$ex->login($credentials['username'], $credentials['password'], $isHash = true);
+
+			$login_redirect = Symphony::Configuration()->get('login-redirect', 'openid-auth');
+			if($login_redirect) {
+				redirect(URL . $login_redirect);
+			}
+
 		}
 	}
