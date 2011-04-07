@@ -30,13 +30,19 @@
 
 			$em = new ExtensionManager(Frontend::instance());
 			$ex = $em->create('members');
+			
+			$creds_array = array();
+			$creds_array['email'] = $email;
+			$creds_array['password'] = NULL;
 
-			$id = 1;
+			$id = $ex->Member->findMemberIDFromCredentials($creds_array);
 
-			// print_r($ex->Member->findMemberIDFromIdentity($email)); exit;
+			// print_r($creds_array); exit;
 
 			if (is_array($id))
 				$id = current($id);
+
+			print_r($id); exit;
 
 			$entry = $ex->Member->fetchMemberFromID($id);
 			
