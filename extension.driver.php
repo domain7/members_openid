@@ -25,31 +25,14 @@
 		{
 			if (!class_exists('extension_Members')) return;
 
-			$fields = Symphony::Configuration()->get('members');
-			
-			// print_r($fields); exit;
-
-			$identity_field = $fields['identity'];
-			$email_field = $fields['email'];
-			$authentication_field = $fields['authentication'];
-
 			$openid_data = $context['openid-data'];
 			$email = $openid_data->sreg_data['email'];
 
 			$em = new ExtensionManager(Frontend::instance());
 			$ex = $em->create('members');
 			
-			$identity = new fieldMemberEmail(Frontend::instance());
+			$id = extension_Members::$fields['email']->fetchMemberIDBy($email);
 			
-			// print_r($identity); exit;
-
-			// $id = $identity->fetchMemberIDBy($email);
-
-			$id = Symphony::Database()->fetchVar('entry_id', 0, sprintf(
-				"SELECT `entry_id` FROM `tbl_entries_data_%d` WHERE `value` = '%s' LIMIT 1",
-				$email_field, Symphony::Database()->cleanValue($email)
-			));
-
 			// print_r($id); exit;
 
 			if (is_array($id))
@@ -69,6 +52,14 @@
 			if (!$credentials) return;
 
 			// print_r($credentials); exit;
+
+			$fields = Symphony::Configuration()->get('members');
+			
+			// print_r($fields); exit;
+
+			$identity_field = $fields['identity'];
+			$email_field = $fields['email'];
+			$authentication_field = $fields['authentication'];
 
 			$username = $credentials[$identity_field]['value'];
 			$email = $credentials[$email_field]['value'];
