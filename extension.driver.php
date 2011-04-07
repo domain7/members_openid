@@ -30,22 +30,29 @@
 
 			$em = new ExtensionManager(Frontend::instance());
 			$ex = $em->create('members');
-
-			$id = extension_Members::findMemberIDFromEmail($email);
+			
+			$id = 1;
+			
+			// print_r($ex->Member->findMemberIDFromIdentity($email)); exit;
+			
 			if (is_array($id))
 				$id = current($id);
 
-			$entry = $ex->fetchMemberFromID($id);
+			$entry = $ex->Member->fetchMemberFromID($id);
+			
+			// print_r($entry); exit;
 
 			if (!($entry instanceof Entry))
 				return; // no member with that mail
 
-			$field = extension_Members::usernameAndPasswordField();
+			$field = 149;
 			$credentials = $entry->getData($field);
 			
 			if (!$credentials) return;
+			
+			print_r($credentials); exit;
 
-			$ex->login($credentials['username'], $credentials['password'], $isHash = true);
+			$ex->Member->login($credentials['username'], $credentials['password'], $isHash = true);
 
 			$login_redirect = Symphony::Configuration()->get('login-redirect', 'openid-auth');
 			if($login_redirect) {
