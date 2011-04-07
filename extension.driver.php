@@ -25,32 +25,6 @@
 		{
 			if (!class_exists('extension_Members')) return;
 
-			$openid_data = $context['openid-data'];
-			$email = $openid_data->sreg_data['email'];
-
-			$em = new ExtensionManager(Frontend::instance());
-			$ex = $em->create('members');
-			
-			$creds_array = array();
-			$creds_array['email'] = $email;
-			$creds_array['password'] = NULL;
-
-			$id = $ex->Member->findMemberIDFromCredentials($creds_array);
-
-			// print_r($creds_array); exit;
-
-			if (is_array($id))
-				$id = current($id);
-
-			print_r($id); exit;
-
-			$entry = $ex->Member->fetchMemberFromID($id);
-			
-			// print_r($entry); exit;
-
-			if (!($entry instanceof Entry))
-				return; // no member with that mail
-
 			$fields = Symphony::Configuration()->get('members');
 			
 			// print_r($fields); exit;
@@ -58,6 +32,37 @@
 			$identity_field = $fields['identity'];
 			$email_field = $fields['email'];
 			$authentication_field = $fields['authentication'];
+
+			$openid_data = $context['openid-data'];
+			$email = $openid_data->sreg_data['email'];
+
+			$em = new ExtensionManager(Frontend::instance());
+			$ex = $em->create('members');
+			
+			$identity = new fieldMemberEmail(Frontend::instance());
+			
+			// print_r($identity); exit;
+
+			// $id = $identity->fetchMemberIDBy($email);
+
+			$id = Symphony::Database()->fetchVar('entry_id', 0, sprintf(
+				"SELECT `entry_id` FROM `tbl_entries_data_%d` WHERE `value` = '%s' LIMIT 1",
+				$email_field, Symphony::Database()->cleanValue($email)
+			));
+
+			// print_r($id); exit;
+
+			if (is_array($id))
+				$id = current($id);
+
+			// print_r($id); exit;
+
+			$entry = $ex->Member->fetchMemberFromID($id);
+			
+			// print_r($entry); exit;
+
+			if (!($entry instanceof Entry))
+				return; // no member with that mail
 
 			$credentials = $entry->getData();
 
