@@ -45,9 +45,13 @@
 			if (!($entry instanceof Entry))
 				return; // no member with that mail
 
-			$identity_field = 148;
-			$email_field = 149;
-			$authentication_field = 150;
+			$fields = Symphony::Configuration()->get('members');
+			
+			// print_r($fields); exit;
+
+			$identity_field = $fields['identity'];
+			$email_field = $fields['email'];
+			$authentication_field = $fields['authentication'];
 
 			$credentials = $entry->getData();
 
