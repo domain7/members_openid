@@ -6,8 +6,8 @@
 			return array('name' => 'Members with OpenID',
 						 'version' => '0.1',
 						 'release-date' => '2011-03-13',
-						 'author' => array('name' => 'Marco Sampellegrini',
-										   'email' => 'm@rcosa.mp')
+						 'author' => array('name' => 'Stephen Bau',
+										   'email' => 'stephen@domain7.com')
 				 		);
 		}
 		
@@ -25,26 +25,54 @@
 		{
 			if (!class_exists('extension_Members')) return;
 
+			// Fetch the OpenID data
 			$openid_data = $context['openid-data'];
 			$email = $openid_data->sreg_data['email'];
 
 			$em = new ExtensionManager(Frontend::instance());
 			$ex = $em->create('members');
-
-			$id = extension_Members::findMemberIDFromEmail($email);
+			
+			// Fetch the member ID from the OpenID email address
+			$id = extension_Members::$fields['email']->fetchMemberIDBy($email);
+			
 			if (is_array($id))
 				$id = current($id);
 
-			$entry = $ex->fetchMemberFromID($id);
-
+			// Fetch the member entry data
+			$entry = $ex->Member->fetchMemberFromID($id);
+			
 			if (!($entry instanceof Entry))
 				return; // no member with that mail
 
-			$field = extension_Members::usernameAndPasswordField();
-			$credentials = $entry->getData($field);
-			
+			$credentials = $entry->getData();
+
 			if (!$credentials) return;
 
-			$ex->login($credentials['username'], $credentials['password'], $isHash = true);
+			// Fetch the members section field IDs from the configuration file
+			$fields = Symphony::Configuration()->get('members');
+			
+			$identity_field = $fields['identity'];
+			$email_field = $fields['email'];
+			$authentication_field = $fields['authentication'];
+
+			$username = $credentials[$identity_field]['value'];
+			$email = $credentials[$email_field]['value'];
+			$password = $credentials[$authentication_field]['password'];
+
+			// Populate an array with data to use for logging in the member
+			$creds = array();
+			$creds['username'] = $username;
+			$creds['email'] = $email;
+			$creds['password'] = $password;
+
+			// Authenticate the member
+			$ex->Member->login($creds, true);
+
+			// Redirect on successful login using the $login_redirect setting in the configuration file
+			$login_redirect = Symphony::Configuration()->get('login-redirect', 'openid-auth');
+			if($login_redirect) {
+				redirect(URL . $login_redirect);
+			}
+
 		}
 	}
