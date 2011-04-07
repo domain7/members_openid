@@ -3,12 +3,17 @@
 	class Extension_Members_Openid extends Extension{
 
 		public function about(){
-			return array('name' => 'Members with OpenID',
-						 'version' => '0.1',
-						 'release-date' => '2011-03-13',
-						 'author' => array('name' => 'Stephen Bau',
-										   'email' => 'stephen@domain7.com')
-				 		);
+			return array(
+				'name' => 'Members with OpenID',
+				'type' => 'Event',
+				'version' => '0.2',
+				'release-date' => '2011-04-06',
+				'author' => array(
+					'name' => 'Stephen Bau',
+					'website' => 'http://www.domain7.com',
+					'email' => 'stephen@domain7.com'),
+				'description' => 'Integrate Members and OpenID Authentication extensions.'
+			);
 		}
 		
 		public function getSubscribedDelegates(){
