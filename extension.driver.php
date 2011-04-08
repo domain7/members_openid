@@ -34,7 +34,7 @@
 			$openid_data = $context['openid-data'];
 			$email = $openid_data->sreg_data['email'];
 
-			$em = new ExtensionManager(Frontend::instance());
+			$em = Symphony::ExtensionManager(Frontend::instance());
 			$ex = $em->create('members');
 			
 			// Fetch the member ID from the OpenID email address
