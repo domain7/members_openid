@@ -35,21 +35,21 @@
 			$email = $openid_data->sreg_data['email'];
 
 			$em = new ExtensionManager(Frontend::instance());
-			$ex = $em->create('members');
+			$Members = $em->create('members');
 			
 			// Fetch the member ID from the OpenID email address
-			$id = extension_Members::$fields['email']->fetchMemberIDBy($email);
+			$id = $Members->getField('email')->fetchMemberIDBy($email);
 			
 			if (is_array($id))
 				$id = current($id);
 
 			// Fetch the member entry data
-			$entry = $ex->Member->fetchMemberFromID($id);
+			$member = $Members->getMemberDriver()->fetchMemberFromID($id);
 			
-			if (!($entry instanceof Entry))
+			if (!($member instanceof Entry))
 				return; // no member with that mail
 
-			$credentials = $entry->getData();
+			$credentials = $member->getData();
 
 			if (!$credentials) return;
 
@@ -71,7 +71,7 @@
 			$creds['password'] = $password;
 
 			// Authenticate the member
-			$ex->Member->login($creds, true);
+			$Members->getMemberDriver()->login($creds, true);
 
 			// Redirect on successful login using the $login_redirect setting in the configuration file
 			$login_redirect = Symphony::Configuration()->get('login-redirect', 'openid-auth');
