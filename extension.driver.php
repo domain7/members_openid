@@ -55,9 +55,9 @@
 			// Fetch the members section field IDs from the configuration file
 			$fields = Symphony::Configuration()->get('members');
 			
-			$identity_field = $fields['identity'];
-			$email_field = $fields['email'];
-			$authentication_field = $fields['authentication'];
+			$identity_field = $Members->getField('identity')->get('id');
+			$email_field = $Members->getField('email')->get('id');
+			$authentication_field = $Members->getField('authentication')->get('id');
 
 			$username = $credentials[$identity_field]['value'];
 			$email = $credentials[$email_field]['value'];
